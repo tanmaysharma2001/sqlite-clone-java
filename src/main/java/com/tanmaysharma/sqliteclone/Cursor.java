@@ -17,7 +17,7 @@ public class Cursor {
 
     public void advance() {
         rowNum++;
-        if (rowNum == table.getNumRows()) {
+        if (rowNum >= table.getNumRows()) {
             endOfTable = true;
         }
     }
@@ -25,5 +25,12 @@ public class Cursor {
     public int getRowNum() {
         return this.rowNum;
     }
-
+    
+    public void setRowNum(int rowNum) {
+        this.rowNum = rowNum;
+    }
+    
+    public void setEndOfTable(boolean endOfTable) {
+        this.endOfTable = endOfTable;
+    }
 }
