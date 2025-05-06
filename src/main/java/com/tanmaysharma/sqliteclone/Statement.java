@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public class Statement {
     private StatementType type;
     private Row rowToInsert;

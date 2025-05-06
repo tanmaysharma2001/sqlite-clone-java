@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public class Table {
     private int numRows;
     private Pager pager;

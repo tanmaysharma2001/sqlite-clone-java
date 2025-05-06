@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 

@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -6,6 +8,8 @@ public class Database {
     public static final int TABLE_MAX_ROWS = 1000;
     public static final int PAGE_SIZE = 4096;  // 4 KB page size, same as the original
     public static final int MAX_PAGES = 100;
+    public static final int ROWS_PER_PAGE = 100;  // Adjust according to your need
+
 
     public static Table open(String filename) {
         Pager pager = new Pager(filename);

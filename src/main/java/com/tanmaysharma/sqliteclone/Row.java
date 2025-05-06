@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public class Row {
     private int id;
     private String username;

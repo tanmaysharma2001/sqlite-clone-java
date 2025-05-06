@@ -46,12 +46,12 @@ public class Main {
             printPrompt();
 
             // Read the input from the user
-            inputBuffer.readInput(scanner.nextLine().trim());
+            inputBuffer.readInput(scanner);
 
             // Check if the input starts with a meta command (commands starting with '.')
-            if (inputBuffer.buffer().startsWith(".")) {
+            if (inputBuffer.buffer.startsWith(".")) {
                 MetaCommandResult metaCommandResult = doMetaCommand(inputBuffer, table);
-                if (result == MetaCommandResult.META_COMMAND_UNRECOGNIZED_COMMAND) {
+                if (metaCommandResult == MetaCommandResult.META_COMMAND_UNRECOGNIZED_COMMAND) {
                     System.out.printf("Unrecognized command '%s'.%n", inputBuffer.buffer);
                 }
                 continue;

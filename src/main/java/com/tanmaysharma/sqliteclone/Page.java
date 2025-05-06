@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public class Page {
     private byte[] data;
 

@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public class Cursor {
     private Table table;
     private int rowNum;
@@ -19,4 +21,9 @@ public class Cursor {
             endOfTable = true;
         }
     }
+
+    public int getRowNum() {
+        return this.rowNum;
+    }
+
 }

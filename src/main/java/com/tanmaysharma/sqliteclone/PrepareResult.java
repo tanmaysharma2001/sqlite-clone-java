@@ -1,3 +1,5 @@
+package com.tanmaysharma.sqliteclone;
+
 public enum PrepareResult {
     PREPARE_SUCCESS,
     PREPARE_SYNTAX_ERROR,

@@ -1,3 +1,4 @@
+package com.tanmaysharma.sqliteclone;
 import java.util.Scanner;
 
 public class InputBuffer {
@@ -12,5 +13,9 @@ public class InputBuffer {
     public void readInput(Scanner scanner) {
         this.buffer = scanner.nextLine().trim();
         this.inputLength = buffer.length();
+    }
+
+    public String getBuffer() {
+        return this.buffer;
     }
 }
