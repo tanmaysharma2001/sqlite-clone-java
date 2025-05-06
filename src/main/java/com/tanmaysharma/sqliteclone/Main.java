@@ -46,58 +46,91 @@ public class Main {
             printPrompt();
 
             // Read the input from the user
-            inputBuffer.setBuffer(scanner.nextLine().trim());
+            inputBuffer.readInput(scanner.nextLine().trim());
 
             // Check if the input starts with a meta command (commands starting with '.')
-            if (inputBuffer.getBuffer().startsWith(".")) {
-                MetaCommandResult metaCommandResult = MetaCommands.doMetaCommand(inputBuffer, table);
-                if (metaCommandResult == MetaCommandResult.SUCCESS) {
-                    continue;
-                } else {
-                    System.out.printf("Unrecognized command '%s'.%n", inputBuffer.getBuffer());
-                    continue;
+            if (inputBuffer.buffer().startsWith(".")) {
+                MetaCommandResult metaCommandResult = doMetaCommand(inputBuffer, table);
+                if (result == MetaCommandResult.META_COMMAND_UNRECOGNIZED_COMMAND) {
+                    System.out.printf("Unrecognized command '%s'.%n", inputBuffer.buffer);
                 }
+                continue;
             }
 
             // Prepare the SQL statement for execution
             Statement statement = new Statement();
-            PrepareResult prepareResult = Statement.prepareStatement(inputBuffer, statement);
-
-            // Handle the result of preparing the statement
-            switch (prepareResult) {
-                case SUCCESS:
-                    break;
-                case SYNTAX_ERROR:
-                    System.out.println("Syntax error could not parse statement.");
-                    continue;
-                case UNRECOGNIZED_STATEMENT:
-                    System.out.printf("Unrecognized keyword at start of '%s'.%n", inputBuffer.getBuffer());
-                    continue;
-                case NEGATIVE_ID:
-                    System.out.println("Parsing Error: Negative ID passed");
-                    continue;
+            
+            PrepareResult prepareResult = prepareStatement(inputBuffer, statement);
+            
+            if (prepareResult != PrepareResult.PREPARE_SUCCESS) {
+                System.out.println("Error preparing statement.");
+                continue;
             }
 
-            // Execute the SQL statement
-            ExecuteResult executeResult = table.executeStatement(statement);
-
-            // Handle the result of executing the statement
-            switch (executeResult) {
-                case SUCCESS:
-                    System.out.println("Executed");
-                    break;
-                case TABLE_FULL:
-                    System.out.println("Table is full!");
-                    break;
-                case FAILED:
-                    System.out.println("Executing the command failed.");
-                    break;
+            ExecuteResult executeResult = executeStatement(statement, table);
+            
+            if (executeResult == ExecuteResult.EXECUTE_SUCCESS) {
+                System.out.println("Executed");
+            } else {
+                System.out.println("Execution failed.");
             }
         }
     }
 
     // Function to print the prompt for the REPL
-    private static void printPrompt() {
+    public static void printPrompt() {
         System.out.print("db > ");
     }
+
+    public static MetaCommandResult doMetaCommand(InputBuffer buffer, Table table) {
+        if (buffer.buffer.equals(".exit")) {
+            Database.close(table);
+            System.exit(0);
+            return MetaCommandResult.META_COMMAND_SUCCESS;
+        }
+        return MetaCommandResult.META_COMMAND_UNRECOGNIZED_COMMAND;
+    }
+
+    public static PrepareResult prepareStatement(InputBuffer buffer, Statement statement) {
+        String[] arguments = buffer.buffer.split(" ");
+        if (arguments[0].equals("insert")) {
+            return prepareInsert(buffer, statement);
+        }
+        if (arguments[0].equals("select")) {
+            statement.setType(StatementType.STATEMENT_SELECT);
+            return PrepareResult.PREPARE_SUCCESS;
+        }
+        return PrepareResult.PREPARE_UNRECOGNIZED_STATEMENT;
+    }
+
+    public static PrepareResult prepareInsert(InputBuffer buffer, Statement statement) {
+        String[] arguments = buffer.buffer.split(" ");
+        if (arguments.length < 4) {
+            return PrepareResult.PREPARE_SYNTAX_ERROR;
+        }
+
+        try {
+            int id = Integer.parseInt(arguments[1]);
+            if (id < 0) {
+                return PrepareResult.PREPARE_NEGATIVE_ID;
+            }
+
+            Row row = new Row(id, arguments[2], arguments[3]);
+            statement.setRowToInsert(row);
+            statement.setType(StatementType.STATEMENT_INSERT);
+            return PrepareResult.PREPARE_SUCCESS;
+        } catch (NumberFormatException e) {
+            return PrepareResult.PREPARE_SYNTAX_ERROR;
+        }
+    }
+
+    public static ExecuteResult executeStatement(Statement statement, Table table) {
+        if (statement.getType() == StatementType.STATEMENT_INSERT) {
+            return table.executeInsert(statement);
+        } else if (statement.getType() == StatementType.STATEMENT_SELECT) {
+            return table.executeSelect(statement);
+        }
+        return ExecuteResult.EXECUTE_FAIL;
+    }
+
 }

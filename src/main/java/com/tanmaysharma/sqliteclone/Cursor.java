@@ -1,33 +1,21 @@
-package com.tanmaysharma.sqliteclone;
-
 public class Cursor {
-    public Table table;
-    public int rowNum;
-    public boolean endOfTable;
+    private Table table;
+    private int rowNum;
+    private boolean endOfTable;
 
-    // Constructor
-    public Cursor(Table table, int rowNum, boolean endOfTable) {
+    public Cursor(Table table) {
         this.table = table;
-        this.rowNum = rowNum;
-        this.endOfTable = endOfTable;
+        this.rowNum = 0;
+        this.endOfTable = (table.getNumRows() == 0);
     }
 
-    // Start of the table
-    public static Cursor tableStart(Table table) {
-        Cursor cursor = new Cursor(table, 0, table.numRows == 0);
-        return cursor;
+    public boolean isEndOfTable() {
+        return endOfTable;
     }
 
-    // End of the table
-    public static Cursor tableEnd(Table table) {
-        Cursor cursor = new Cursor(table, table.numRows, true);
-        return cursor;
-    }
-
-    // Move to the next row
     public void advance() {
-        rowNum += 1;
-        if (rowNum == table.numRows) {
+        rowNum++;
+        if (rowNum == table.getNumRows()) {
             endOfTable = true;
         }
     }

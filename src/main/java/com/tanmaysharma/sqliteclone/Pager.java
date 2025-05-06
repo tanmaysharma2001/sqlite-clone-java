@@ -1,60 +1,44 @@
-package com.tanmaysharma.sqliteclone;
-
-import java.io.RandomAccessFile;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class Pager {
-    public RandomAccessFile file;
-    public int fileDescriptor;
-    public int numPages;
-    public int fileLength;
-    public Page[] pages = new Page[Table.TABLE_MAX_PAGES];
+    private RandomAccessFile file;
+    private Page[] pages;
+    private int fileLength;
 
-    public Pager(String filename) throws IOException {
-        // Open the file for read/write access, or create it if it doesn't exist
-        file = new RandomAccessFile(filename, "rw");
-        fileDescriptor = (int) file.getFD();
-        fileLength = (int) file.length();
-        numPages = fileLength / Table.PAGE_SIZE;
-
-        // Initialize pages array
-        for (int i = 0; i < Table.TABLE_MAX_PAGES; i++) {
-            pages[i] = null;
+    public Pager(String filename) {
+        try {
+            this.file = new RandomAccessFile(filename, "rw");
+            this.fileLength = (int) file.length();
+            this.pages = new Page[Database.MAX_PAGES];
+        } catch (IOException e) {
+            System.err.println("Error opening file: " + filename);
+            System.exit(1);
         }
     }
 
-    // Get the page for a given page number
-    public Page getPage(int pageNum) throws IOException {
-        if (pageNum >= Table.TABLE_MAX_PAGES) {
-            throw new IllegalStateException("Tried to fetch page number out of bounds: " + pageNum);
-        }
-
-        if (pages[pageNum] == null) {
-            // Cache miss, create a new page and load it from the file
-            Page page = new Page();
-            long offset = (long) pageNum * Table.PAGE_SIZE;
-            file.seek(offset);
-            file.read(page.rows);
-            pages[pageNum] = page;
-        }
-
-        return pages[pageNum];
+    public RandomAccessFile getFile() {
+        return file;
     }
 
-    // Write the page to disk
-    public void flushPage(int pageNum) throws IOException {
-        if (pages[pageNum] == null) {
-            throw new IllegalStateException("Tried to flush null page.");
-        }
-
-        Page page = pages[pageNum];
-        long offset = (long) pageNum * Table.PAGE_SIZE;
-        file.seek(offset);
-        file.write(page.rows);
+    public Page[] getPages() {
+        return pages;
     }
 
-    // Close the file
-    public void close() throws IOException {
-        file.close();
+    public int getFileLength() {
+        return fileLength;
+    }
+
+    public void flush(int pageNum, int bytesToWrite) {
+        if (pages[pageNum] != null) {
+            try {
+                long offset = (long) pageNum * Database.PAGE_SIZE;
+                file.seek(offset);
+                file.write(pages[pageNum].getData(), 0, bytesToWrite);
+            } catch (IOException e) {
+                System.err.println("Error flushing page: " + e.getMessage());
+                System.exit(1);
+            }
+        }
     }
 }
