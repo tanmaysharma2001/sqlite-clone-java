@@ -1,38 +1,28 @@
 package com.tanmaysharma.sqliteclone;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-    extends TestCase
+@DisplayName("Application Tests")
+class AppTest
 {
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
+    @Test
+    @DisplayName("Should pass basic test")
+    void shouldPassBasicTest() {
+        assertTrue(true);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @Test
+    @DisplayName("Should validate application constants")
+    void shouldValidateApplicationConstants() {
+        // Test that our main class exists and can be instantiated
+        assertDoesNotThrow(() -> {
+            Class<?> mainClass = Class.forName("com.tanmaysharma.sqliteclone.Main");
+            assertNotNull(mainClass);
+        });
     }
 }

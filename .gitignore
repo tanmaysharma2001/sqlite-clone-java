@@ -35,4 +35,8 @@ Thumbs.db
 *.tmp
 *.swp
 
+# DB
 *.db
+
+# LLM
+llm.txt
